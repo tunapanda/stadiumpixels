@@ -5,6 +5,7 @@ var PNG = require('pngjs2').PNG;
 var minimist = require("minimist");
 var swig = require("swig");
 var webshot = require('webshot');
+var async = require('async');
 
 function pngReadPixelRgb(png, x, y) {
 	return {
@@ -18,6 +19,15 @@ function pngReadPixelBool(png, x, y) {
 	var rgb = pngReadPixelRgb(png, x, y);
 
 	return ((rgb.r + rgb.g + rgb.b) / 3) > 127;
+}
+
+function range(numItems) {
+	var res = [];
+
+	for (var i = 0; i < numItems; i++)
+		res.push(i);
+
+	return res;
 }
 
 var targetWidth = 48;
@@ -42,14 +52,67 @@ for (var i = 0; i < argv._.length; i++) {
 	images.push(png);
 }
 
-var outPrefix = "test";
+var outPrefix = "out/test";
 var templateFile = "tpl/leaflet.tpl";
 var index = 0;
+var pageNum = 0;
+var vars = {
+	pages: []
+};
 
-var vars = {};
-vars.pages = [];
+async.eachSeries(range(targetHeight), function(y, yCallback) {
 
-for (y = 0; y < targetHeight; y++) {
+	async.eachSeries(range(targetWidth), function(x, xCallback) {
+		var page = {};
+
+		page.instructions = [];
+		page.row = (y + 1);
+		page.seat = (x + 1);
+
+		for (i = 0; i < images.length; i++) {
+			var image = images[i];
+
+			page.instructions.push({
+				program: (i + 1),
+				value: pngReadPixelBool(image, x, y)
+			});
+		}
+
+		vars.pages.push(page);
+
+		index++;
+
+		if (index == 4) {
+			var options = {
+				siteType: 'html',
+				screenSize: {
+					width: 670,
+					height: 870
+				}
+			}
+
+			var content = swig.renderFile(templateFile, vars);
+			console.log("creating page " + pageNum);
+
+			webshot(content, outPrefix + pageNum + '.png', options,
+				function(err) {
+					if (err)
+						console.log(err);
+
+					index = 0;
+					pageNum++;
+					vars = {
+						pages: []
+					};
+					xCallback();
+				});
+		} else {
+			xCallback();
+		}
+	}, yCallback);
+});
+
+/*for (y = 0; y < targetHeight; y++) {
 	for (x = 0; x < targetWidth; x++) {
 		var page = {};
 
@@ -88,6 +151,4 @@ for (y = 0; y < targetHeight; y++) {
 				});
 		}
 	}
-}
-/*console.log(pngReadPixelBool(png, 19, 4));
-console.log(pngReadPixelBool(png, 5, 5));*/
+}*/
