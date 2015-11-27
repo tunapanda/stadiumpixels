@@ -4,6 +4,7 @@ var swig = require("swig");
 var webshot = require('webshot');
 var async = require('async');
 var Thenable = require("tinp");
+var os = require("os");
 
 function StaduimPixels() {
 	this.targetWidth = 48;
@@ -11,7 +12,7 @@ function StaduimPixels() {
 
 	this.imageFileNames = [];
 	this.images = [];
-	this.outPrefix = null; //"out/test";
+	this.outPrefix = os.tmpdir() + "/stadiumpixels";
 	this.templateFile = __dirname + "/../tpl/leaflet.tpl";
 	this.maskImageFileName = null;
 }
@@ -77,7 +78,7 @@ StaduimPixels.prototype.generatePages = function(pages) {
 	}
 
 	var content = swig.renderFile(this.templateFile, vars);
-	console.log("creating page " + this.pageNum);
+	console.log("Creating page " + this.pageNum);
 
 	var doneThenable = new Thenable();
 

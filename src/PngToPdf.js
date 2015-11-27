@@ -55,8 +55,6 @@ PngToPdf.prototype.run = function() {
 		sub.show();
 		sub.expect(0);
 
-		console.log(sub.cmdArgs);
-
 		sub.run().then(this.runThenable.resolve);
 	}.bind(this));
 
