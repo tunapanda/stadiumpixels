@@ -6,6 +6,8 @@ function usage() {
 	console.log("Usage:");
 	console.log("  stadiumpixels [options] <files...>");
 	console.log("");
+	console.log("Note, the input files must match the targetWidth and targetHeight exactly!");
+	console.log("");
 	console.log("Options:");
 	console.log("  --outPrefix=<prefix>      - Specify out prefix for generated files.");
 	console.log("  --targetWidth=<width>     - Seats per row in the stadium.");

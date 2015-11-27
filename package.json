@@ -1,6 +1,6 @@
 {
   "name": "stadiumpixels",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -16,5 +16,9 @@
     "swig": "^1.4.2",
     "tinp": "0.0.4",
     "webshot": "^0.16.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tunapanda/stadiumpixels.git"
   }
 }
