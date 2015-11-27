@@ -1,6 +1,18 @@
 stadiumpixels
 =============
 
+Generate leaflets for human pixels in a stadium.
+
+Installation
+------------
+
+```
+npm install -g stadiumpixels
+```
+
+Usage
+-----
+
 ```
 stadiumpixels - Generate leaflets for human pixels in a stadium.
 
