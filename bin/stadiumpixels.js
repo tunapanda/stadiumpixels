@@ -10,7 +10,8 @@ function usage() {
 	console.log("  --outPrefix=<prefix>      - Specify out prefix for generated files.");
 	console.log("  --targetWidth=<width>     - Seats per row in the stadium.");
 	console.log("  --targetHeight=<height>   - Rows in the stadium.");
-	console.log("  --templateFile=<file>     - Swig template for generating leaflets.")
+	console.log("  --templateFile=<file>     - Swig template for generating leaflets.");
+	console.log("  --mask=<file>             - Seat mask.")
 	process.exit(1);
 }
 

@@ -83,9 +83,9 @@
 
 						<div class="instruction">
 							{% if instruction.value %}
-								white
-							{% else %}
 								black
+							{% else %}
+								white
 							{% endif %}
 						</div>
 					</div>

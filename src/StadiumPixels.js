@@ -26,7 +26,7 @@ function pngReadPixelRgb(png, x, y) {
 function pngReadPixelBool(png, x, y) {
 	var rgb = pngReadPixelRgb(png, x, y);
 
-	return ((rgb.r + rgb.g + rgb.b) / 3) > 127;
+	return ((rgb.r + rgb.g + rgb.b) / 3) < 128;
 }
 
 function range(numItems) {
