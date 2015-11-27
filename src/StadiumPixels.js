@@ -13,6 +13,7 @@ function StaduimPixels() {
 	this.images = [];
 	this.outPrefix = null; //"out/test";
 	this.templateFile = __dirname + "/../tpl/leaflet.tpl";
+	this.maskImageFileName = null;
 }
 
 function pngReadPixelRgb(png, x, y) {
@@ -38,6 +39,10 @@ function range(numItems) {
 	return res;
 }
 
+StaduimPixels.prototype.setMaskImageFile = function(fn) {
+	this.maskImageFileName = fn;
+}
+
 StaduimPixels.prototype.addImageFile = function(fn) {
 	this.imageFileNames.push(fn);
 }
@@ -58,8 +63,48 @@ StaduimPixels.prototype.setTemplateFile = function(v) {
 	this.templateFile = v;
 }
 
+StaduimPixels.prototype.generatePages = function(pages) {
+	var vars = {
+		pages: pages
+	};
+
+	var options = {
+		siteType: 'html',
+		screenSize: {
+			width: 670,
+			height: 870
+		}
+	}
+
+	var content = swig.renderFile(this.templateFile, vars);
+	console.log("creating page " + this.pageNum);
+
+	var doneThenable = new Thenable();
+
+	webshot(content, this.outPrefix + this.pageNum + '.png', options,
+		function(err) {
+			if (err) {
+				console.log(err);
+				process.exit(1);
+			}
+
+			this.pageNum++;
+
+			doneThenable.resolve();
+		}.bind(this));
+
+	return doneThenable;
+}
+
 StaduimPixels.prototype.run = function() {
 	this.runThenable = new Thenable();
+
+	this.maskImage = null;
+
+	if (this.maskImageFileName) {
+		var data = fs.readFileSync(this.maskImageFileName);
+		this.maskImage = PNG.sync.read(data);
+	}
 
 	var images = [];
 
@@ -81,18 +126,17 @@ StaduimPixels.prototype.run = function() {
 	}
 
 	var index = 0;
-	var pageNum = 0;
-	var vars = {
-		pages: []
-	};
+	this.pageNum = 0;
+	var pages = [];
 
 	async.eachSeries(range(this.targetHeight), function(y, yCallback) {
+		var useX = 0;
 		async.eachSeries(range(this.targetWidth), function(x, xCallback) {
 			var page = {};
 
 			page.instructions = [];
 			page.row = (y + 1);
-			page.seat = (x + 1);
+			page.seat = (useX + 1);
 
 			for (i = 0; i < images.length; i++) {
 				var image = images[i];
@@ -103,39 +147,34 @@ StaduimPixels.prototype.run = function() {
 				});
 			}
 
-			vars.pages.push(page);
+			if (!this.maskImage || pngReadPixelBool(this.maskImage, x, y)) {
+				pages.push(page);
 
-			index++;
+				index++;
+				useX++;
 
-			if (index == 4) {
-				var options = {
-					siteType: 'html',
-					screenSize: {
-						width: 670,
-						height: 870
-					}
-				}
-
-				var content = swig.renderFile(this.templateFile, vars);
-				console.log("creating page " + pageNum);
-
-				webshot(content, this.outPrefix + pageNum + '.png', options,
-					function(err) {
-						if (err)
-							console.log(err);
-
+				if (index == 4) {
+					this.generatePages(pages).then(function() {
 						index = 0;
-						pageNum++;
-						vars = {
-							pages: []
-						};
+						pages = [];
 						xCallback();
-					});
+					}.bind(this));
+				} else {
+					xCallback();
+				}
 			} else {
 				xCallback();
 			}
 		}.bind(this), yCallback);
-	}.bind(this), this.runThenable.resolve.bind(this.runThenable));
+	}.bind(this), function() {
+		if (pages.length) {
+			this.generatePages(pages).then(function() {
+				this.runThenable.resolve();
+			}.bind(this));
+		} else {
+			this.runThenable.resolve();
+		}
+	}.bind(this));
 
 	return this.runThenable;
 }

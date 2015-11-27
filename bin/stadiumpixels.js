@@ -47,6 +47,10 @@ for (k in argv) {
 			stadiumPixels.setTemplateFile(v);
 			break;
 
+		case "mask":
+			stadiumPixels.setMaskImageFile(v);
+			break;
+
 		case "_":
 			break;
 
