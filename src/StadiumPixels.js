@@ -96,6 +96,14 @@ StaduimPixels.prototype.generatePages = function(pages) {
 	return doneThenable;
 }
 
+StaduimPixels.prototype.getNumPages = function() {
+	return this.pageNum;
+}
+
+StaduimPixels.prototype.getOutPrefix = function() {
+	return this.outPrefix;
+}
+
 StaduimPixels.prototype.run = function() {
 	this.runThenable = new Thenable();
 

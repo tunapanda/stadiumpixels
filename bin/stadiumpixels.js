@@ -12,12 +12,13 @@ function usage() {
 	console.log("  --targetHeight=<height>   - Rows in the stadium.");
 	console.log("  --templateFile=<file>     - Swig template for generating leaflets.");
 	console.log("  --mask=<file>             - Seat mask.")
+	console.log("  --combine=<file.pdf>      - Combine all pages to a pdf.")
 	process.exit(1);
 }
 
 var minimist = require("minimist");
 var StadiumPixels = require("../src/StadiumPixels");
-
+var PngToPdf = require("../src/PngToPdf");
 var argv = minimist(process.argv.slice(2));
 
 if (!argv._.length) {
@@ -51,6 +52,7 @@ for (k in argv) {
 			stadiumPixels.setMaskImageFile(v);
 			break;
 
+		case "combine":
 		case "_":
 			break;
 
@@ -65,7 +67,17 @@ for (var i = 0; i < argv._.length; i++)
 	stadiumPixels.addImageFile(argv._[i]);
 
 stadiumPixels.run().then(function() {
-	console.log("Complete!");
+	console.log("Complete, " + stadiumPixels.getNumPages() + " page(s).");
+	if (argv.combine) {
+		console.log("Combining to " + argv.combine);
+		var combiner = new PngToPdf();
+		combiner.setPrefix(stadiumPixels.getOutPrefix());
+		combiner.setNumImages(stadiumPixels.getNumPages());
+		combiner.setOutputFileName(argv.combine);
+		combiner.run().then(function() {
+			console.log("Done!");
+		});
+	}
 }, function(e) {
 	console.log(e);
 	process.exit(1);
