@@ -146,8 +146,8 @@ StaduimPixels.prototype.run = function() {
 	var index = 0;
 	this.pageNum = 0;
 	var pages = [];
-
 	var maxRow = 0;
+	var customRows = "ABCDEFGHJKLMNPQRSTUVWXYZ";
 
 	for (var y = 0; y < this.targetHeight; y++) {
 		if (!this.maskImage || pngIsRowUsed(this.maskImage, y))
@@ -167,6 +167,8 @@ StaduimPixels.prototype.run = function() {
 			}
 		}
 
+		console.log("row: " + String.fromCharCode(65 + (maxRow - y)) + " custom: " + customRows[maxRow - y]);
+
 		//console.log("pixels on row: " + pixelsOnRow);
 
 		async.eachSeries(range(this.targetWidth), function(x, xCallback) {
@@ -178,6 +180,7 @@ StaduimPixels.prototype.run = function() {
 			page.reverseSeat = (pixelsOnRow - useX);
 			page.reverseRow = ((maxRow - y) + 1);
 			page.reverseRowAlpha = String.fromCharCode(65 + (maxRow - y));
+			page.reverseRowCustom = customRows[maxRow - y];
 
 			for (i = 0; i < images.length; i++) {
 				var image = images[i];
