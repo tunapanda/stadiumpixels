@@ -17,6 +17,12 @@
 				border: 1px solid black;
 			}
 
+			.picture{
+				position: absolute;
+				margin-left:100px;
+				
+			}
+
 			.row {
 				position: relative;
 				height: 50px;
@@ -60,18 +66,24 @@
 	<body>
 		{% for page in pages %}
 			<div class="page">
-				<h1>Welcome</h1>
-				<p>
+				<!--<div class="picture">
+				<image src="tunapandalogo.png" alt="logo.png" style="width:100px;height:100px;">
+				</div>-->
+
+				<!--<h1>Welcome</h1>-->
 					These are your instructions for being a human pixel.<br/><br/>
-					They are specific to your seat, please don't lose them or swap them with your neighbour.
-				</p>
+					There will be two activities. For the first activity you will hold up 
+					a bag with the same color that is written next to the number "1" on this page.
+					For the second activity you will hold up 
+					a bag with the same color that is written next to the number "2" on this page.
+<br/><br/>
 
 				<div class="intro">
 					<div class="program">
-						For this program:
+						Activity:
 					</div>
 					<div class="instruction">
-						Show this color:
+						Color:
 					</div>
 				</div>
 
