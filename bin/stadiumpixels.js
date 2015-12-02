@@ -23,10 +23,8 @@ var StadiumPixels = require("../src/StadiumPixels");
 var PngToPdf = require("../src/PngToPdf");
 var argv = minimist(process.argv.slice(2));
 
-if (!argv._.length) {
-	console.log("Usage: stadiumpixels <files...>");
-	process.exit(1);
-}
+if (!argv._.length)
+	usage();
 
 var stadiumPixels = new StadiumPixels();
 
