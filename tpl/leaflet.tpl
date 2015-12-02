@@ -91,7 +91,7 @@
 					</div>
 				{% endfor %}
 				<div class="footer">
-					Row: {{page.row}} Seat: {{page.seat}}
+					Seat: {{page.reverseRowCustom}} - {{page.reverseSeat}}
 				</div>
 			</div>
 		{% endfor %}
