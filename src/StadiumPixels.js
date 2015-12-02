@@ -31,6 +31,15 @@ function pngReadPixelBool(png, x, y) {
 	return ((rgb.r + rgb.g + rgb.b) / 3) < 128;
 }
 
+function pngIsRowUsed(png, y) {
+	for (var x = 0; x < png.width; x++) {
+		if (pngReadPixelBool(png, x, y))
+			return true;
+	}
+
+	return false;
+}
+
 function range(numItems) {
 	var res = [];
 
@@ -138,14 +147,37 @@ StaduimPixels.prototype.run = function() {
 	this.pageNum = 0;
 	var pages = [];
 
+	var maxRow = 0;
+
+	for (var y = 0; y < this.targetHeight; y++) {
+		if (!this.maskImage || pngIsRowUsed(this.maskImage, y))
+			maxRow = y;
+	}
+
+	console.log("max row: " + maxRow);
+
 	async.eachSeries(range(this.targetHeight), function(y, yCallback) {
 		var useX = 0;
+
+		var pixelsOnRow = 0;
+
+		for (x = 0; x < this.targetWidth; x++) {
+			if (!this.maskImage || pngReadPixelBool(this.maskImage, x, y)) {
+				pixelsOnRow++;
+			}
+		}
+
+		//console.log("pixels on row: " + pixelsOnRow);
+
 		async.eachSeries(range(this.targetWidth), function(x, xCallback) {
 			var page = {};
 
 			page.instructions = [];
 			page.row = (y + 1);
 			page.seat = (useX + 1);
+			page.reverseSeat = (pixelsOnRow - useX);
+			page.reverseRow = ((maxRow - y) + 1);
+			page.reverseRowAlpha = String.fromCharCode(65 + (maxRow - y));
 
 			for (i = 0; i < images.length; i++) {
 				var image = images[i];
